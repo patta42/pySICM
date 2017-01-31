@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PySICMGUIMainWindow</class>
+ <widget class="QMainWindow" name="PySICMGUIMainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1098</width>
+    <height>776</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>pySICM - GUI</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="unixres.qrc">
+    <normaloff>:/Icons/pySICM48.png</normaloff>:/Icons/pySICM48.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QMdiArea" name="mdiArea">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="viewMode">
+       <enum>QMdiArea::SubWindowView</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1098</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuNew">
+     <property name="title">
+      <string>&amp;New</string>
+     </property>
+    </widget>
+    <addaction name="menuNew"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="separator"/>
+    <addaction name="actionSaveAsTemplate"/>
+    <addaction name="actionSaveAsDefaultTemplate"/>
+    <addaction name="separator"/>
+    <addaction name="actionExport"/>
+    <addaction name="actionImport"/>
+    <addaction name="separator"/>
+    <addaction name="actionClose"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Controller</string>
+    </property>
+    <addaction name="actionControllerConnect"/>
+    <addaction name="actionControllerDisconnect"/>
+    <addaction name="separator"/>
+    <addaction name="actionControllerSettings"/>
+   </widget>
+   <widget class="QMenu" name="menuScanmodes">
+    <property name="title">
+     <string>Scanmodes</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuSetting">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionFakeMode"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuSettings"/>
+   <addaction name="menuScanmodes"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuSetting"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionShow_controller_window"/>
+   <addaction name="separator"/>
+   <addaction name="actionOpen"/>
+   <addaction name="separator"/>
+   <addaction name="actionStartScan"/>
+   <addaction name="actionStop_Scan"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+  </widget>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../../../../../usr/share/icons/Tango/16x16/actions/fileopen.png</normaloff>../../../../../../../usr/share/icons/Tango/16x16/actions/fileopen.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Open</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionAddressAndPort">
+   <property name="text">
+    <string>Address and port</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>&amp;Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionExport">
+   <property name="text">
+    <string>&amp;Export</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="text">
+    <string>&amp;Close</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionEmpty">
+   <property name="text">
+    <string>Empty</string>
+   </property>
+  </action>
+  <action name="actionStartScan">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../../../../../usr/share/icons/Tango/24x24/actions/gtk-media-play-ltr.png</normaloff>
+     <normalon>../../../../../../../usr/share/icons/Tango/24x24/actions/next.png</normalon>../../../../../../../usr/share/icons/Tango/24x24/actions/gtk-media-play-ltr.png</iconset>
+   </property>
+   <property name="text">
+    <string>StartScan</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionStop_Scan">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../../../../../usr/share/icons/Tango/24x24/actions/media-playback-stop.png</normaloff>
+     <normalon>../../../../../../../usr/share/icons/Tango/24x24/actions/player_stop.png</normalon>../../../../../../../usr/share/icons/Tango/24x24/actions/media-playback-stop.png</iconset>
+   </property>
+   <property name="text">
+    <string>Stop Scan</string>
+   </property>
+   <property name="toolTip">
+    <string>Stop current measurement</string>
+   </property>
+  </action>
+  <action name="actionShow_controller_window">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../../../../usr/share/icons/Tango/24x24/devices/gnome-fs-client.png</normaloff>../../../../../../usr/share/icons/Tango/24x24/devices/gnome-fs-client.png</iconset>
+   </property>
+   <property name="text">
+    <string>show controller window</string>
+   </property>
+  </action>
+  <action name="actionConnect">
+   <property name="text">
+    <string>Connect</string>
+   </property>
+  </action>
+  <action name="actionDisconnect">
+   <property name="text">
+    <string>Disconnect</string>
+   </property>
+  </action>
+  <action name="actionControllerSettings">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionControllerConnect">
+   <property name="text">
+    <string>Connect</string>
+   </property>
+  </action>
+  <action name="actionControllerDisconnect">
+   <property name="text">
+    <string>Disconnect</string>
+   </property>
+  </action>
+  <action name="actionFakeMode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fake mode (development)</string>
+   </property>
+  </action>
+  <action name="actionSaveAsTemplate">
+   <property name="text">
+    <string>Save as template</string>
+   </property>
+  </action>
+  <action name="actionSaveAsDefaultTemplate">
+   <property name="text">
+    <string>Save as default template</string>
+   </property>
+  </action>
+  <action name="actionImport">
+   <property name="text">
+    <string>Import</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="unixres.qrc"/>
+ </resources>
+ <connections/>
+</ui>

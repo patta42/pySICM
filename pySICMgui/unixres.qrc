@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="Icons">
+    <file>pySICM16.png</file>
+    <file>pySICM32.png</file>
+    <file>pySICM48.png</file>
+    <file>pySICM64.png</file>
+  </qresource>
+</RCC>

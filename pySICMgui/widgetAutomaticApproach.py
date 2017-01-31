@@ -1,0 +1,138 @@
+# -*- coding: utf-8 -*-
+# Copyright (C) 2015 Patrick Happel <patrick.happel@rub.de>
+#
+# This file is part of pySICM.
+#
+# pySICM is free software: you can redistribute it and/or modify it under the
+# terms of the GNU General Public License as published by the Free Software
+# Foundation, either version 2 of the License, or (at your option) any later
+# version.
+#
+# pySICM is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# pySICM. If not, see <http://www.gnu.org/licenses/>.
+'''This widget implements an approach in z-direction'''
+
+from PyQt4 import QtCore
+from PyQt4.QtGui import QWidget, QLayout, QVBoxLayout, QPalette, QSpinBox, QLabel
+from pySICMgui.defaultScanwidget import DefaultScanWidget
+import json, time, struct, numpy
+import pySICM.helpers as Helpers
+try:
+    _fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    def _fromUtf8(s):
+        return s
+
+
+class WidgetAutomaticApproach(DefaultScanWidget):
+    def __init__ (self, mainwin, parent = None):
+        super(WidgetAutomaticApproach, self).__init__(
+            mainwin, parent, mode="automaticApproach")
+        self.setWindowTitle('Automatic approach')
+        self.populateForm()
+        self.addGraph('data',xlabel='time/ms',ylabel='voltage/V')
+        self.progressBar.hide()
+
+
+    def sendSettings(self):
+        client = self.mainwin.client
+        client.sendLine('SET mode=automaticApproach')
+        for setting, field in self.settings.iteritems():
+            client.sendLine('SET automaticApproach.'+str(setting)+'='+str(field.text()))
+
+    def scan(self):
+        self._prepare()
+        self.receiveData('SCAN')
+
+    def _prepare(self):
+        self.data = []
+        self.pos = []
+        self.drawdata = []
+        self.drawpos = []
+        self.drawing = 0;
+        self.mainwin.serverLog=str(time.time())
+        self.sendSettings()
+        stop = [0, numpy.iinfo(numpy.uint16).max,                
+                0, numpy.iinfo(numpy.uint16).max,                
+                0, numpy.iinfo(numpy.uint16).max]                
+        s = '';
+        for i in stop:
+            s+=self.mkByte(i)
+        self.expectData(self.updateData, form = float, stop=s, rang=[-10,10], offset=8)
+
+    def updateData(self, data, *args):
+        #l = len(data)/2
+        print "Data updated. Data length is:" +str(len(data))
+        print max(data)
+        print min(data)
+#        pos = data[0:4]
+        self.data = data[2:-6]
+        self.drawData()
+        a = numpy.zeros((len(self.data),1),numpy.uint16)
+        c = 0
+        for i in self.data:
+            a[c,0] = (i+10/20) * numpy.iinfo(numpy.uint16).max
+            c+=1
+        self.data = a
+        self.unexpectData()
+
+    def drawData(self):
+#        print "Data length is:" + str(len(self.data))
+        mpw = self.getGraph('data')
+        s1 = self.data_offset[0:2]
+        s2 = self.data_offset[2:4]
+        e1 = self.data_offset[4:6]
+        e2 = self.data_offset[4:6]
+        s = self.mkInt(s1) * 2**16 + self.mkInt(s2)
+        
+        e = self.mkInt(e1) * 2**16 + self.mkInt(e2)
+        x = numpy.linspace(s, e, len(self.data))
+#        print len(x)
+#        print len(self.data)
+#        sys.exit()
+
+        mpw.axes.plot(x, self.data,'-')
+        try:
+            f = float(self.settings['Sensitivity'].text())
+            self.data[:] = [x / f for x in self.data]
+            mpw.axes.set_ylabel('amplified current / nA')
+        except:
+            mpw.axes.set_ylabel('amplified current / volts')
+        
+        mpw.axes.set_xlabel('piezo deflection / nm')
+
+#        mpw.axes.set_ylim(1-2*(1.0-float(self.settings['Threshold'].text())), (1+2*(1.0-float(self.settings['Threshold'].text()))))
+ #       mpw.axes.set_xlim(0, 100.0/int(self.settings['FallRate'].text()))
+        mpw.axes.get_yaxis().get_major_formatter().set_useOffset(False)
+        mpw.draw()
+#        mpw = self.getGraph('pos')
+#        x = numpy.linspace(0,len(self.drawpos)*1e-1, len(self.drawpos))
+#        mpw.axes.plot(x, self.drawpos);
+#        #        mpw.axes.set_xlabel('time s')
+        #        mpw.axes.set_ylabel('position 50 m')
+#        mpw.axes.set_ylim(0,100);
+#        mpw.axes.set_xlim(0, 100.0/int(self.settings['FallRate'].text()))
+#        mpw.draw()
+#        self.lastUpdate = time.time()
+#        self.drawing = 0
+
+       
+
+    def mkByte(self, number):
+        # little endian
+        a = int(number / 256)
+        b = int(number % 256)
+        try:
+            return struct.pack('B',b)+struct.pack('B',a)
+        except:
+            print "b: "+str(b)
+            print "a: "+str(a)
+
+    def mkInt(self, bytes):
+        a = bytes[0]
+        b = bytes[1]
+        return struct.unpack('B',b)[0]*2**8 + struct.unpack('B',a)[0]
