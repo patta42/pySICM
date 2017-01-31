@@ -1,0 +1,121 @@
+# Copyright (C) 2015 Patrick Happel <patrick.happel@rub.de>
+#
+# This file is part of pySICM.
+#
+# pySICM is free software: you can redistribute it and/or modify it under the
+# terms of the GNU General Public License as published by the Free Software
+# Foundation, either version 2 of the License, or (at your option) any later
+# version.
+#
+# pySICM is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# pySICM. If not, see <http://www.gnu.org/licenses/>.
+
+class SimpleCallback (object):
+    def __init__(self, cb, count, _id = None, arg = None):
+        self._cb = cb
+        self._count = count
+        self._arg = arg
+        self._id = _id
+    
+    def fire(self, arg, arg2 = None):
+        if self._count > 0:
+            self._count = self._count - 1
+        if arg2 is None and self._arg is None:
+            return self._cb(arg)
+        if arg2 is None:
+            return self._cb(arg, self._arg)
+        if self._arg is None:
+            return self._cb(arg, arg2)
+        return self._cb(arg, arg2, self._arg)
+            
+
+    def shouldBeDeleted(self):
+        if self._count == 0:
+            return True
+        return False
+
+
+class SimpleCallbackSystem (object):
+
+    _callbacks = {}
+
+    def addCallback(self, hook, callback, arg = {}):
+        return self._addCallback(hook, callback, count = -1, arg = arg)
+
+    def addSingleCallbackWithId(self, hook, callback, _id, arg = {}):
+        return self._addCallback(hook, callback, count = 1, _id = _id, arg = arg)
+    def addTemporaryCallback(self, count, hook, callback, arg={}):
+        return self._addCallback(hook, callback, count = count, arg = arg)
+    
+    def _addCallback(self, hook, callback, count = -1, _id = None, arg = None):
+        if hook not in self._callbacks:
+            self._callbacks[hook] = []
+        cb = SimpleCallback(callback, count, _id, arg)
+        self._callbacks[hook].append(cb)
+        return cb
+
+    def removeCallback(self, hook, callback):
+        print "Trying to remove callback %s from hook %s" % (callback, hook)
+        if hook in self._callbacks:
+            if isinstance(callback, SimpleCallback):
+                if callback in self._callbacks[hook]:
+                    print "Removing callback %s" % callback
+                    self._callbacks[hook].remove(callback)
+                    return True
+            else:
+                delCb = None
+                for cb in self._callbacks[hook]:
+                    print "Checking callback with cb-function %s" % cb._cb
+                    if cb._cb == callback:
+                        delCb = cb
+                        break
+                print "Removing callback %s" % callback
+                self._callbacks[hook].remove(delCb)
+                return True
+        return False
+        
+
+    def fireCallbacks(self, hook, arg, _id = None, passReturn = True):
+        #print "Processing hook: %s" % hook
+        if hook in self._callbacks:
+            tobedeleted = []
+            if passReturn == True:
+                ret = arg
+                for cb in self._callbacks[hook]:
+                    if _id is None:
+                        ret = cb.fire(arg, ret)
+                        if cb.shouldBeDeleted() == True:
+                            tobedeleted.append(cb)
+                    else:
+                        if cb._id is None or cb._id == _id:
+                            ret = cb.fire(arg, ret)
+                            if cb.shouldBeDeleted() == True:
+                                tobedeleted.append(cb)
+                                
+            else:
+                for cb in self._callbacks[hook]:
+                    if _id is None:
+                        cb.fire(arg)
+                        if cb.shouldBeDeleted() == True:
+                            tobedeleted.append(cb)
+                    else:
+                        if cb._id == _id or cb._id is None:
+                            cb.fire(arg)
+                            if cb.shouldBeDeleted() == True:
+                                tobedeleted.append(cb)
+                        
+            for cb in tobedeleted:
+                self.removeCallback(hook, cb)
+
+    def hasCallbackFunc(self, hook, cb):
+        if hook not in self._callbacks:
+            return False
+        for callback in self._callbacks[hook]:
+            if callback._cb  == cb:
+                return True
+        return False
+        
