@@ -26,5 +26,6 @@ machines, pySICM is for linux only.
 - pySICM is modular
 - pySICM consists of three major parts
 
-For more information, see the readme files in the corresponding directories.
+For more information, see the readme files in the corresponding directories
+(once they are available).
 
