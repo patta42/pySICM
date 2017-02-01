@@ -22,15 +22,17 @@ class Logger( object ):
     '''The Logger class is used to log debug messages'''
     
     # Default log file
-    logfile = '/var/log/pySICM/pySICM.log'
+    logfile      = '/var/log/pySICM/pySICM.log'
+
+    # Other default settings
     save_old_log = True
-    log_level = 1
-    file_object = None
-    log_info = ['info', 'log', 'debug'];
+    log_level    = 1
+    file_object  = None
+    log_info     = ['info', 'log', 'debug']
+    to_console   = False
 
     def __init__( self, logfile = None ):
         '''Optionally initialize with a new logfile'''
-        
         if logfile is not None:
             self.logfile = logfile
     
@@ -53,15 +55,18 @@ class Logger( object ):
     def _write_log ( self, msg , mode ):
         '''Internal: Writes data to the log file'''
         if self.file_object is None:
-            self._open();
-            self.log("Started logging.");
+            self._open()
+            self.log("Started logging.")
 
         if mode <= self.log_level:
-            file_object.write('{time}|{level}: {msg}'.format(
-                time = datetime.datetime.now( ), 
+            s = '{time}|{level}: {msg}'.format(
+                time  = datetime.datetime.now( ), 
                 level = self.log_info[ mode ], 
-                msg = msg
-            ))
+                msg   = msg
+            )
+            file_object.write(s)
+            if self.to_console:
+                print(s)
 
     def log( self, msg ):
         '''Logs a message at log-level 1 (log):
@@ -79,17 +84,17 @@ class Logger( object ):
         self._write_log( msg, 3 )
     
 
-    def logLevelLog( self ):
+    def log_level_log( self ):
         '''Sets log-level to log'''
-        self.log_level = 1;
+        self.log_level = 1
 
-    def logLevelInfo( self ):
+    def log_level_info( self ):
         '''Sets log-level to log'''
-        self.log_level = 2;
+        self.log_level = 2
 
-    def logLevelDebug( self ):
+    def log_level_debug( self ):
         '''Sets log-level to log'''
-        self.log_level = 3;
+        self.log_level = 3
     
     
 
